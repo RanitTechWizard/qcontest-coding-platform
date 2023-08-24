@@ -1,8 +1,5 @@
 package qcontest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Contestant extends User {
     public Contestant(String username) {
         super(username);

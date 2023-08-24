@@ -1,8 +1,5 @@
 package qcontest;
 
-import java.util.Map;
-import java.util.HashMap;
-
 /**
  * The Question class represents a coding question that can be included in contests on the QContest platform.
  * Each question has a unique ID, a title, a difficulty level, and a score associated with it.
