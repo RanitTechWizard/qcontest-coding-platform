@@ -9,7 +9,11 @@ import java.util.ArrayList;
  * It allows adding questions and listing questions based on difficulty level.
  */
 public class QuestionManager {
+    private static QuestionManager instance = null;
     private List<Question> questions = new ArrayList<>();
+
+    // Private constructor to enforce singleton pattern
+    private QuestionManager() {}
 
     /**
      * Adds a new question with the provided title, difficulty level, and score to the list of questions.
@@ -20,6 +24,22 @@ public class QuestionManager {
      */
     public void addQuestion(String title, DifficultyLevel level, int score) {
         questions.add(new Question(title, level, score));
+    }
+
+    /**
+     * Gets the singleton instance of QuestionManager.
+     *
+     * @return The singleton instance of QuestionManager.
+     */
+    public static QuestionManager getInstance() {
+        if (instance == null) {
+            synchronized (QuestionManager.class) { // Use synchronized block for double-checked locking
+                if (instance == null) {
+                    instance = new QuestionManager();
+                }
+            }
+        }
+        return instance;
     }
 
     /**

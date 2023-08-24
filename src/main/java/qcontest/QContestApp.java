@@ -48,7 +48,7 @@ public class QContestApp {
         inputCommands.add("LEADERBOARD 1 DESC");
 
         QContestPlatform platform = new QContestPlatform();
-        QuestionManager questionManager = new QuestionManager();
+        QuestionManager questionManager = QuestionManager.getInstance();
         List<User> userList = new ArrayList<>();
         List<Contest> contestList = new ArrayList<>();
 
