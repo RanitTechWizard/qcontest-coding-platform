@@ -8,16 +8,19 @@ import java.util.ArrayList;
 public class QContestApp {
     public static void main(String[] args) {
         List<String> inputCommands = new ArrayList<>();
-        inputCommands.add("CREATE_QUESTION Question1 LOW 10");
-        inputCommands.add("CREATE_QUESTION Question2 MEDIUM 20");
-        inputCommands.add("CREATE_QUESTION Question3 HIGH 30");
-        inputCommands.add("CREATE_QUESTION Question4 LOW 15");
-        inputCommands.add("CREATE_QUESTION Question5 MEDIUM 25");
-        inputCommands.add("CREATE_QUESTION Question6 HIGH 35");
+
         inputCommands.add("CREATE_USER Ross");
         inputCommands.add("CREATE_USER Jacob");
         inputCommands.add("CREATE_USER Ranit CREATOR");
         inputCommands.add("CREATE_USER Jina CREATOR");
+
+        inputCommands.add("CREATE_QUESTION Question1 LOW 10 Ranit");
+        inputCommands.add("CREATE_QUESTION Question2 MEDIUM 20 Ranit");
+        inputCommands.add("CREATE_QUESTION Question3 HIGH 30 Ranit");
+        inputCommands.add("CREATE_QUESTION Question4 LOW 15 Jina");
+        inputCommands.add("CREATE_QUESTION Question5 MEDIUM 25 Jina");
+        inputCommands.add("CREATE_QUESTION Question6 HIGH 35 Ross");
+
         inputCommands.add("CREATE_USER Rahul CONTESTANT");
         inputCommands.add("CREATE_USER Dhruv CONTESTANT");
         inputCommands.add("LIST_QUESTION");
@@ -28,10 +31,20 @@ public class QContestApp {
         inputCommands.add("LIST_CONTEST MEDIUM");
         inputCommands.add("ATTEND_CONTEST 1 Rahul");
         inputCommands.add("ATTEND_CONTEST 1 Dhruv");
+
+        // Contestant Rahul solves 4 questions
         inputCommands.add("SOLVE_QUESTION 1 1 Rahul");
         inputCommands.add("SOLVE_QUESTION 1 2 Rahul");
+        inputCommands.add("SOLVE_QUESTION 1 3 Rahul");
+        inputCommands.add("SOLVE_QUESTION 1 4 Rahul");
+
+        // Creator Ranit starts Contest1
         inputCommands.add("RUN_CONTEST 1 Ranit");
+
+        // Display the Contest History
         inputCommands.add("CONTEST_HISTORY 1");
+
+        // Display the leaderboard
         inputCommands.add("LEADERBOARD 1 DESC");
 
         QContestPlatform platform = new QContestPlatform();
@@ -49,9 +62,21 @@ public class QContestApp {
                     String title = parts[1];
                     DifficultyLevel level = DifficultyLevel.valueOf(parts[2]);
                     int score = Integer.parseInt(parts[3]);
-                    Command createQuestionCommand = new CreateQuestionCommand(title, level, score, questionManager);
-                    platform.setCommand(createQuestionCommand);
-                    platform.executeCommand();
+                    String creatorUsername = parts[4]; // Parse the creator's username from input
+
+                    // Find the Creator for the user list
+                    Creator creator = (Creator) userList.stream()
+                            .filter(user -> user instanceof Creator && user.getUsername().equalsIgnoreCase(creatorUsername))
+                            .findFirst()
+                            .orElse(null);
+
+                    if (creator != null) {
+                        Command createQuestionCommand = new CreateQuestionCommand(title, level, score, questionManager, creator);
+                        platform.setCommand(createQuestionCommand);
+                        platform.executeCommand();
+                    } else {
+                        System.out.println("Creator not found: " + creatorUsername);
+                    }
                 }
                 case "CREATE_USER" -> {
                     if (parts.length < 2) {
