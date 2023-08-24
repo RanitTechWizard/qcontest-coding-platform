@@ -1,7 +1,6 @@
 package qcontest.commands;
 
 import qcontest.Creator;
-import qcontest.Question;
 import qcontest.QuestionManager;
 import qcontest.DifficultyLevel;
 

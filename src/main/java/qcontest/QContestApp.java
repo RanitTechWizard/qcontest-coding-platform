@@ -58,6 +58,11 @@ public class QContestApp {
 
             switch (commandType) {
                 case "CREATE_QUESTION" -> {
+                    if (parts.length != 5) {
+                        System.out.println("Invalid command format. Usage: CREATE_QUESTION <title> <difficulty> <score> <creatorUsername>");
+                        break;
+                    }
+
                     // Parse the input and create a CreateQuestionCommand
                     String title = parts[1];
                     DifficultyLevel level = DifficultyLevel.valueOf(parts[2]);
@@ -93,6 +98,10 @@ public class QContestApp {
                     break;
                 }
                 case "LIST_QUESTION" -> {
+                    if (parts.length > 2) {
+                        System.out.println("Invalid command format. Usage: LIST_QUESTION [difficulty]");
+                        break;
+                    }
                     // Parse the input and create a ListQuestionsCommand
                     DifficultyLevel filterLevel = null;
                     if (parts.length > 1) {
@@ -103,6 +112,10 @@ public class QContestApp {
                     platform.executeCommand();
                 }
                 case "CREATE_CONTEST" -> {
+                    if (parts.length != 5) {
+                        System.out.println("Invalid command format. Usage: CREATE_CONTEST <title> <difficulty> <creatorUsername> <numQuestions>");
+                        break;
+                    }
                     String contestTitle = parts[1];
                     DifficultyLevel contestLevel = DifficultyLevel.valueOf(parts[2]);
                     String creatorUsername = parts[3];
@@ -123,52 +136,65 @@ public class QContestApp {
                 }
                 case "LIST_CONTEST" -> {
                     if (parts.length == 1) {
-                        List<Contest> allContests = ContestManager.listAllContests();
-                        System.out.println("\nList of All Contests:");
-                        System.out.println(allContests);
+                        Command listContestsCommand = new ListContestCommand(contestList);
+                        platform.setCommand(listContestsCommand);
+                        platform.executeCommand();
                     } else if (parts.length == 2) {
                         String difficulty = parts[1];
                         DifficultyLevel contestLevel = DifficultyLevel.valueOf(difficulty);
-                        List<Contest> filteredContests = ContestManager.listContestsByDifficulty(contestLevel);
-                        System.out.println("\nList of Contests with Difficulty " + contestLevel + ":");
-                        System.out.println(filteredContests);
+                        Command listContestsCommand = new ListContestCommand(contestList, contestLevel);
+                        platform.setCommand(listContestsCommand);
+                        platform.executeCommand();
+                    } else {
+                        System.out.println("Invalid command format. Usage: LIST_CONTEST [difficulty]");
                     }
+                    break;
                 }
                 case "ATTEND_CONTEST" -> {
-                    int contestId = Integer.parseInt(parts[1]);
-                    String contestantUsername = parts[2];
+                    if (parts.length == 3) {
+                        int contestId = Integer.parseInt(parts[1]);
+                        String contestantUsername = parts[2];
 
-                    User contestant = userList.stream()
-                            .filter(user -> user.getUsername().equalsIgnoreCase(contestantUsername))
-                            .findFirst()
-                            .orElse(null);
+                        User contestant = userList.stream()
+                                .filter(user -> user.getUsername().equalsIgnoreCase(contestantUsername))
+                                .findFirst()
+                                .orElse(null);
 
-                    Contest contest = contestList.stream()
-                            .filter(c -> c.getId() == contestId)
-                            .findFirst()
-                            .orElse(null);
+                        Contest contest = contestList.stream()
+                                .filter(c -> c.getId() == contestId)
+                                .findFirst()
+                                .orElse(null);
 
-                    if (contestant != null && contest != null) {
-                        if (contestant instanceof Contestant) {
-                            Contestant contestantUser = (Contestant) contestant;
+                        if (contestant != null && contest != null) {
+                            if (contestant instanceof Contestant) {
+                                Contestant contestantUser = (Contestant) contestant;
 
-                            Command attendContestCommand = new AttendContestCommand(contestId, contestantUsername, userList, contestList);
-                            platform.setCommand(attendContestCommand);
-                            platform.executeCommand();
+                                Command attendContestCommand = new AttendContestCommand(contestId, contestantUsername, userList, contestList);
+                                platform.setCommand(attendContestCommand);
+                                platform.executeCommand();
+                            } else {
+                                System.out.println("User is not a contestant: " + contestantUsername);
+                            }
                         } else {
-                            System.out.println("User is not a contestant: " + contestantUsername);
+                            System.out.println("Contestant or contest not found.");
                         }
                     } else {
-                        System.out.println("Contestant or contest not found.");
+                        System.out.println("Invalid command format. Usage: ATTEND_CONTEST <contestId> <contestantUsername>");
                     }
+                    break;
                 }
                 case "WITHDRAW" -> {
-                    int contestId = Integer.parseInt(parts[2]);
-                    String contestantUsername = parts[3];
+                    if (parts.length == 4) {
+                        int contestId = Integer.parseInt(parts[1]);
+                        String contestantUsername = parts[2];
 
-                    Command withdrawCommand = new WithdrawContestCommand(contestId, contestantUsername, userList, contestList);
-                    platform.setCommand(withdrawCommand);
-                    platform.executeCommand();
+                        Command withdrawCommand = new WithdrawContestCommand(contestId, contestantUsername, userList, contestList);
+                        platform.setCommand(withdrawCommand);
+                        platform.executeCommand();
+                    } else {
+                        System.out.println("Invalid command format. Usage: WITHDRAW <contestId> <contestantUsername>");
+                    }
+                    break;
                 }
                 case "RUN_CONTEST" -> {
                     int contestId = Integer.parseInt(parts[1]);
@@ -216,24 +242,19 @@ public class QContestApp {
                     platform.executeCommand();
                 }
                 case "LEADERBOARD" -> {
-                    int contestId = Integer.parseInt(parts[1]);
-                    String order = parts[2];
+                    if (parts.length == 3) {
+                        int contestId = Integer.parseInt(parts[1]);
+                        String order = parts[2];
 
-                    Contest contest = contestList.stream()
-                            .filter(c -> c.getId() == contestId)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (contest != null) {
-                        List<User> leaderboard = contest.getLeaderboardForContest(order);
-                        System.out.println("Leaderboard for Contest " + contestId + ":");
-                        for (User user : leaderboard) {
-                            System.out.println(user);
-                        }
+                        Command leaderboardCommand = new LeaderboardCommand(contestId, order, contestList);
+                        platform.setCommand(leaderboardCommand);
+                        platform.executeCommand();
                     } else {
-                        System.out.println("Contest not found.");
+                        System.out.println("Invalid command format. Usage: LEADERBOARD <contestId> <order>");
                     }
+                    break;
                 }
+
 
                 default -> System.out.println("Unknown command.");
             }

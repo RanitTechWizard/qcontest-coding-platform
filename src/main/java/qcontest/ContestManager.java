@@ -1,8 +1,8 @@
 package qcontest;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * The ContestManager class manages the contests available on the QContest platform.
@@ -20,7 +20,10 @@ public class ContestManager {
      * @param numQuestions The number of questions for the contest.
      * @param questionManager The QuestionManager instance to retrieve questions.
      */
-    public static Contest addContest(String title, DifficultyLevel level, User creator, int numQuestions, QuestionManager questionManager) {
+    public static Contest addContest(String title,
+                                     DifficultyLevel level,
+                                     User creator, int numQuestions,
+                                     QuestionManager questionManager) {
         Contest contest = new Contest(title, level, creator, numQuestions, questionManager);
         contests.add(contest);
         return contest;
@@ -69,25 +72,6 @@ public class ContestManager {
             }
         }
         return null; // Contest not found
-    }
-
-    /**
-     * Retrieves a leaderboard of users in descending order of their scores.
-     *
-     * @return A list of User objects sorted by score in descending order.
-     */
-    public static List<User> getLeaderboard() {
-        List<User> allUsers = new ArrayList<>();
-
-        // Collect all participants from all contests
-        for (Contest contest : contests) {
-            allUsers.addAll(contest.getParticipants());
-        }
-
-        // Sort users by score in descending order
-        allUsers.sort(Comparator.comparingInt(User::getScore).reversed());
-
-        return allUsers;
     }
 
     public List<User> getLeaderboard(String order, Contest contest) {

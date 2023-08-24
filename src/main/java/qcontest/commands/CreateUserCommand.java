@@ -1,10 +1,8 @@
 package qcontest.commands;
 
 import qcontest.User;
-import qcontest.Contestant;
 import qcontest.Creator;
-
-import qcontest.commands.Command;
+import qcontest.Contestant;
 
 import java.util.List;
 
