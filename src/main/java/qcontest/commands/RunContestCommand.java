@@ -9,14 +9,12 @@ public class RunContestCommand implements Command {
     private final String creatorUsername;
     private final List<User> userList;
     private final List<Contest> contestList;
-    private final QuestionManager questionManager;
 
     public RunContestCommand(int contestId, String creatorUsername, List<User> userList, List<Contest> contestList, QuestionManager questionManager) {
         this.contestId = contestId;
         this.creatorUsername = creatorUsername;
         this.userList = userList;
         this.contestList = contestList;
-        this.questionManager = questionManager;
     }
 
     @Override
@@ -35,7 +33,7 @@ public class RunContestCommand implements Command {
             if (contest.getCreator() != creator) {
                 System.out.println("Only the contest creator can run the contest.");
             } else {
-                List<User> updatedContestants = contest.runContest(creator);
+                List<User> updatedContestants = creator.runContest(contest);
 
                 if (updatedContestants != null) {
                     for (User user : updatedContestants) {

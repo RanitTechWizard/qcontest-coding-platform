@@ -1,5 +1,7 @@
 package qcontest;
 
+import java.util.List;
+
 public class Creator extends User {
     public Creator(String username) {
         super(username);
@@ -29,7 +31,22 @@ public class Creator extends User {
         System.out.println("Question added by Creator: " + title);
     }
 
-
+    /**
+     * Runs a contest created by the creator.
+     *
+     * @param contest The contest to be run.
+     * @return A list of updated contestants after running the contest.
+     */
+    public List<User> runContest(Contest contest) {
+        if (contest.getCreator() == this) {
+            List<User> updatedContestants = contest.runContest(this);
+            System.out.println(contest.getTitle() + " run by creator: " + getUsername());
+            return updatedContestants;
+        } else {
+            System.out.println("You are not the creator of this contest.");
+            return null;
+        }
+    }
 
     @Override
     public String toString() {
